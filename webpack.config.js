@@ -20,7 +20,8 @@ const getRules = function (mode) {
       test: /\.(css|scss)$/,
       use: [
         // fallback to style-loader in development
-        mode !== "production" ? "style-loader" : MiniCssExtractPlugin.loader,
+        // mode !== "production" ? "style-loader" : MiniCssExtractPlugin.loader,
+        MiniCssExtractPlugin.loader,
         "css-loader",
         "sass-loader",
       ],
@@ -32,11 +33,12 @@ const getRules = function (mode) {
         {
           loader: "file-loader",
           options: {
-            publicPath: "assets",
-            name: "[path][name].[ext]?[hash]",
-            context: "src",
-            outputPath: "",
-            useRelativePath: false,
+            name: '[path][name].[ext]',
+            context: path.resolve(__dirname, "src/"),
+            outputPath: 'dist/',
+            publicPath: '/',
+            useRelativePaths: true,
+            // useRelativePath: false,
           },
         },
       ],
@@ -57,13 +59,13 @@ const getPlugins = function (mode) {
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
       // both options are optional
-      filename: "assets/css/[name]_[hash].css",
-      chunkFilename: "assets/css/[id]_[hash].css",
+      filename: "assets/css/[name]_[contenthash].css",
+      chunkFilename: "assets/css/[id]_[contenthash].css",
     }),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
-    }),
+    }),    
     new CopyWebpackPlugin({
       patterns: [
         { from: src + "/assets/images", to: dist + "/assets/images" },
@@ -71,9 +73,10 @@ const getPlugins = function (mode) {
           from: src + "/static",
         },
       ],
-    }),
-  ];
+    }),    
+  ];  
   if (mode === "production") {
+     
     plugins.unshift(new CleanWebpackPlugin());
   }
   return plugins;
@@ -106,7 +109,8 @@ let config = {
 };
 
 module.exports = (env, argv) => {
-  if (argv.mode === "development") {
+  let mode = argv.mode || 'development';
+  if (mode === "development") {
     config.devtool = "source-map";
     config.output = {
       filename: "[name].js",
@@ -114,15 +118,20 @@ module.exports = (env, argv) => {
     };
   }
 
-  if (argv.mode === "production") {
+  if (mode === "production") {
     config.output = {
       filename: "[name]_[hash].min.js",
       path: dist,
     };
   }
 
-  config.module.rules = getRules(argv.mode);
-  config.plugins = getPlugins(argv.mode);
+  config.module.rules = getRules(mode);
+  config.plugins = getPlugins(mode);
+  config.performance = {
+    maxEntrypointSize: 400000,
+    maxAssetSize: 100000 * 10
+  }
+
 
   return config;
 };

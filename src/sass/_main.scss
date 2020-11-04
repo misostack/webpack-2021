@@ -1,5 +1,40 @@
 @import "custom";
 @import "~bootstrap/scss/bootstrap";
+body{
+  min-height:100vh;
+}
+// Partial
+.header-classic{
+  background-color: transparent;
+  background-image: url(assets/images/header-classic-background.jpg);
+  background-repeat: no-repeat;
+  background-size: auto;
+  // height: calc(50vh - 3em);
+  // height: calc(100vh);
+  min-height: 300px;
+  position: relative;
+  &:before{
+    content: "";
+    display: block;
+    position: absolute;    
+    height: calc(100%);
+    width: 100%;
+    background-color: rgba(0,0,0,0.3);    
+  }  
+  .jumbotron{
+    background-color: transparent;    
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width:100%;
+    color: #FFF;
+  }
+  .headline{
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+}
 
 // Responsive
 @include media-breakpoint-up(xs) {
